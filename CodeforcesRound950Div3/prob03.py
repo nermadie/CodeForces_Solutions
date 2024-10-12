@@ -8,18 +8,16 @@ def solve(n, a, b, m, d):
             dict_diff_ab[b[i]] += 1
         dict_b.setdefault(b[i], 0)
         dict_b[b[i]] += 1
-    dict_d = {}
-    for i in range(m):
-        dict_d.setdefault(d[i], 0)
-        dict_d[d[i]] += 1
     if d[-1] not in dict_b:
         return "No"
-    for key, value in dict_diff_ab.items():
-        if key not in dict_d:
-            return "No"
-        if dict_d[key] < value:
-            return "No"
-    return "Yes"
+    for i in range(m):
+        if d[i] in dict_diff_ab:
+            dict_diff_ab[d[i]] -= 1
+            if dict_diff_ab[d[i]] == 0:
+                dict_diff_ab.pop(d[i])
+    if len(dict_diff_ab) == 0:
+        return "Yes"
+    return "No"
 
 
 t = int(input())
