@@ -1,30 +1,25 @@
 # C. Vlad and a Sum of Sum of Digits
+# Run with Python 3.8.5 will result better performance than PyPy
 def sum_of_digits(n):
-    buffer10 = 0
-    buffer100 = 0
-    buffer1000 = 0
-    buffer10000 = 0
     result = 0
-    for i in range(1, n + 1):
-        if i % 10 == 0:
-            buffer10 += 1
-        if i % 100 == 0:
-            buffer100 += 1
-            buffer10 = 0
-        if i % 1000 == 0:
-            buffer1000 += 1
-            buffer10 = 0
-            buffer100 = 0
-        if i % 10000 == 0:
-            buffer10000 += 1
-            buffer10 = 0
-            buffer100 = 0
-            buffer1000 = 0
-        result += buffer10 + buffer100 + buffer1000 + buffer10000 + i % 10
+    divisor = 1
+    while n >= divisor:
+        higher_nums = n // (10 * divisor)
+        current_digit = (n // divisor) % 10
+        lower_nums = n % divisor
+        result += (
+            higher_nums * 45 * divisor
+            + (((0 + current_digit - 1) * current_digit) // 2) * divisor
+            + ((lower_nums + 1) * current_digit)
+        )
+        divisor *= 10
     return result
 
 
 t = int(input())
+result = []
 for _ in range(t):
     n = int(input())
-    print(sum_of_digits(n))
+    result.append(sum_of_digits(n))
+for i in result:
+    print(i)
