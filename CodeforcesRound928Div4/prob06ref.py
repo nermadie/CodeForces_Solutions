@@ -1,41 +1,62 @@
-from itertools import combinations as q
+def helper(b, q):
+    m = [[0] * 7 for _ in range(7)]
+    count = 0
+    for i in range(1, 6):
+        for j in range(1, 6):
+            if (i + j) % 2 == q:
+                if (
+                    b[i][j] == "B"
+                    and b[i - 1][j - 1] == "B"
+                    and b[i - 1][j + 1] == "B"
+                    and b[i + 1][j - 1] == "B"
+                    and b[i + 1][j + 1] == "B"
+                ):
+                    t = 1 << count
+                    m[i][j] |= t
+                    m[i - 1][j - 1] |= t
+                    m[i - 1][j + 1] |= t
+                    m[i + 1][j - 1] |= t
+                    m[i + 1][j + 1] |= t
+                    count += 1
+    for item in m:
+        print(item)
+    m2 = [False] * (1 << count)
+    moves = []
+    for x in m:
+        for y in x:
+            if not m2[y]:
+                m2[y] = True
+                moves.append(y)
 
-e = range
-
-
-def o(g, p):
-    for i in e(1, 6):
-        for j in e(1, 6):
-            if (i + j) % 2 != p:
+    moves2 = []
+    for i in range(len(moves)):
+        ok = True
+        a = moves[i]
+        for j in range(len(moves)):
+            if i == j:
                 continue
-            if (
-                g[i][j]
-                + g[i - 1][j - 1]
-                + g[i - 1][j + 1]
-                + g[i + 1][j - 1]
-                + g[i + 1][j + 1]
-                == 5
-            ):
-                return 0
-    return 1
+            b = moves[j]
+            if b & a == a:
+                ok = False
+                break
+        if ok:
+            moves2.append(a)
+    print("move: ", moves)
+    print("move2: ", moves2)
+
+    dp = [20] * (1 << count)  # 20 > 12 hoac 13
+    dp[0] = 0
+    for i in range(1 << count):
+        if dp[i] == 20:
+            continue
+        for m in moves2:
+            t = i | m
+            dp[t] = min(dp[t], dp[i] + 1)
+    print(dp)
+    print()
+    return dp[-1]
 
 
-def s():
-    g = [[1 if c == "B" else 0 for c in input()] for _ in e(7)]
-    a = [(i, j) for i in e(1, 6) for j in e(1, 6) if (i + j) % 2 == 0 and g[i][j]]
-    b = [(i, j) for i in e(1, 6) for j in e(1, 6) if (i + j) % 2 == 1 and g[i][j]]
-
-    def d(a, p):
-        for k in e(len(a) + 1):
-            for b in q(a, k):
-                m = [r[:] for r in g]
-                for i, j in b:
-                    m[i][j] = 0
-                if o(m, p):
-                    return k
-
-    print(d(a, 0) + d(b, 1))
-
-
-for _ in e(int(input())):
-    s()
+for _ in range(int(input())):
+    b = [list(input()) for _ in range(7)]
+    print(helper(b, 0) + helper(b, 1))
