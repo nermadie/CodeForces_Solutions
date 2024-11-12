@@ -1,37 +1,16 @@
 # G. Vlad and Trouble at MIT
 def solve(n, a, s):
-    connected_node = {}
-    for i in range(2, n + 1):
-        connected_node.setdefault(i, set())
-        connected_node[i].add(a[i - 2])
-        connected_node.setdefault(a[i - 2], set())
-        connected_node[a[i - 2]].add(i)
-    party_nodes = set()
-    sleep_nodes = set()
-    for i in range(n):
+    dps = [0] * n
+    dpp = [0] * n
+    for i in range(n)[::-1]:
+        if s[i] == "S":
+            dpp[i] = float("inf")
         if s[i] == "P":
-            party_nodes.add(i + 1)
-        elif s[i] == "S":
-            sleep_nodes.add(i + 1)
-    if len(party_nodes) == 0:
-        return 0
-    stack = [party_nodes.pop()]
-    result = 0
-    while stack or party_nodes:
-        if len(stack) == 0 and len(party_nodes) != 0:
-            stack.append(party_nodes.pop())
-        current_node = stack.pop()
-        print("current_node", current_node)
-        for neighbor in connected_node[current_node]:
-            if neighbor == current_node:
-                continue
-            if neighbor in sleep_nodes:
-                result += 1
-                continue
-            if neighbor in party_nodes:
-                party_nodes.remove(neighbor)
-            stack.append(neighbor)
-    return connected_node, {"result": result}
+            dps[i] = float("inf")
+        if i > 0:
+            dpp[a[i - 1] - 1] += min(dpp[i], dps[i] + 1)
+            dps[a[i - 1] - 1] += min(dps[i], dpp[i] + 1)
+    return min(dps[0], dpp[0])
 
 
 t = int(input())
